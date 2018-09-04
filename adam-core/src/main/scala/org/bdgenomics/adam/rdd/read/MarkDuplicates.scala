@@ -20,14 +20,14 @@ package org.bdgenomics.adam.rdd.read
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions.{countDistinct, first, row_number, sum, when}
+import org.apache.spark.sql.functions.{ countDistinct, first, row_number, sum, when }
 import org.bdgenomics.adam.models.RecordGroupDictionary
 import org.bdgenomics.adam.rdd.ADAMContext._
 import org.bdgenomics.adam.rdd.fragment.FragmentRDD
-import org.bdgenomics.adam.sql.{AlignmentRecord => AlignmentRecordSchema, Fragment => FragmentSchema}
-import org.bdgenomics.formats.avro.{AlignmentRecord, Fragment, Strand}
+import org.bdgenomics.adam.sql.{ AlignmentRecord => AlignmentRecordSchema, Fragment => FragmentSchema }
+import org.bdgenomics.formats.avro.{ AlignmentRecord, Fragment, Strand }
 import org.bdgenomics.utils.misc.Logging
-import htsjdk.samtools.{Cigar, CigarElement, CigarOperator, TextCigarCodec}
+import htsjdk.samtools.{ Cigar, CigarElement, CigarOperator, TextCigarCodec }
 
 import scala.collection.JavaConversions._
 
@@ -153,10 +153,10 @@ private[rdd] object MarkDuplicates extends Serializable with Logging {
     // left and right reference positions or those with unmapped right position and group count is equal to zero
     val duplicatesDf = withGroupCount.withColumn("duplicateFragment",
       ('read1contigName.isNotNull and 'read1fivePrimePosition.isNotNull and 'read1strand.isNotNull)
-      and (
+        and (
 
-        row_number.over(positionWindow) =!= 1
-            or ('read2contigName.isNull and 'read2fivePrimePosition.isNull and 'read2strand.isNull and 'groupCount > 0)
+          row_number.over(positionWindow) =!= 1
+          or ('read2contigName.isNull and 'read2fivePrimePosition.isNull and 'read2strand.isNull and 'groupCount > 0)
         )
     )
 
@@ -239,9 +239,9 @@ private[rdd] object MarkDuplicates extends Serializable with Logging {
   }
 
   /**
-    * Case class which merely extends the Fragment Schema by a single column "duplicateFragment" so that
-    * a DataFrame with fragments having been marked as duplicates can be cast back into a DataSet
-    */
+   * Case class which merely extends the Fragment Schema by a single column "duplicateFragment" so that
+   * a DataFrame with fragments having been marked as duplicates can be cast back into a DataSet
+   */
   private case class FragmentDuplicateSchema(readName: Option[String] = None,
                                              instrument: Option[String] = None,
                                              runId: Option[String] = None,
@@ -249,13 +249,12 @@ private[rdd] object MarkDuplicates extends Serializable with Logging {
                                              duplicateFragment: Option[Boolean] = None,
                                              alignments: Seq[AlignmentRecordSchema] = Seq())
 
-
   /**
-    * Marks fragments as duplicate
-    *
-    * @param fragmentRdd A genomic RDD representing a collection of fragments
-    * @return A RDD of fragments each having been specified as duplicate or not
-    */
+   * Marks fragments as duplicate
+   *
+   * @param fragmentRdd A genomic RDD representing a collection of fragments
+   * @return A RDD of fragments each having been specified as duplicate or not
+   */
   def apply(fragmentRdd: FragmentRDD): RDD[Fragment] = {
     import fragmentRdd.dataset.sparkSession.implicits._
 
@@ -372,16 +371,16 @@ private[rdd] object MarkDuplicates extends Serializable with Logging {
       fivePrimePosition(readMapped, readNegativeStrand, cigar, start, end))
 
   /**
-    * Determines the five prime reference position for an alignment record by discarding clipped base pairs
-    * @param readMapped Whether the read is mapped to a reference
-    * @param readNegativeStrand Whether the mapping is on the negative strand
-    * @param cigar Cigar string describing the alignment
-    * @param start reference position of the start of the alignment
-    * @param end reference position of the end of the alignment
-    * @return Reference position of the start of the alignment. For mapped reads this means discarding
-    *         clipped base pairs form the start and end of the alignment depending on whether the alignment
-    *         is on the positive or negative strand, respectively.
-    */
+   * Determines the five prime reference position for an alignment record by discarding clipped base pairs
+   * @param readMapped Whether the read is mapped to a reference
+   * @param readNegativeStrand Whether the mapping is on the negative strand
+   * @param cigar Cigar string describing the alignment
+   * @param start reference position of the start of the alignment
+   * @param end reference position of the end of the alignment
+   * @return Reference position of the start of the alignment. For mapped reads this means discarding
+   *         clipped base pairs form the start and end of the alignment depending on whether the alignment
+   *         is on the positive or negative strand, respectively.
+   */
   private def fivePrimePosition(readMapped: Boolean, readNegativeStrand: Boolean, cigar: String,
                                 start: Long, end: Long): Long = {
     if (!readMapped) 0L

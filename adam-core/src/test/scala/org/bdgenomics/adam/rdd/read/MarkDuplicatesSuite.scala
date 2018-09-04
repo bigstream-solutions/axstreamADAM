@@ -33,7 +33,7 @@ class MarkDuplicatesSuite extends ADAMFunSuite {
       "machine foo",
       library = Some("library bar"))))
 
-  private def createUnmappedRead(primaryAlignment:Boolean = true): AlignmentRecord = {
+  private def createUnmappedRead(primaryAlignment: Boolean = true): AlignmentRecord = {
     AlignmentRecord.newBuilder()
       .setReadMapped(false)
       .setSequence("ACGT")
@@ -43,9 +43,9 @@ class MarkDuplicatesSuite extends ADAMFunSuite {
   }
 
   private def createMappedRead(referenceName: String, start: Long, end: Long,
-                       readName: String = UUID.randomUUID().toString, avgPhredScore: Int = 20,
-                       numClippedBases: Int = 0, isPrimaryAlignment: Boolean = true,
-                       isNegativeStrand: Boolean = false) = {
+                               readName: String = UUID.randomUUID().toString, avgPhredScore: Int = 20,
+                               numClippedBases: Int = 0, isPrimaryAlignment: Boolean = true,
+                               isNegativeStrand: Boolean = false) = {
     assert(avgPhredScore >= 10 && avgPhredScore <= 50)
     val qual = (for (i <- 0 until 100) yield (avgPhredScore + 33).toChar).toString()
     val cigar = if (numClippedBases > 0) "%dS%dM".format(numClippedBases, 100 - numClippedBases) else "100M"
